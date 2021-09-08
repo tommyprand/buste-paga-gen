@@ -1,6 +1,7 @@
 from __future__ import print_function
 from datetime import date
 import os.path
+from re import I
 from wsgiref.util import shift_path_info
 import holidays
 from random import Random
@@ -16,7 +17,7 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 # The ID and range of a sample spreadsheet.
 SPREADSHEET_ID = '1_G86nEoEzipwL5Xiw8JVqEGXXNW964AZowD0o5-Ttiw'
 #The 'writable' range in the sheet
-WRITABLE_RANGE = 'A17:G44'
+WRITABLE_RANGE = 'A17:G55'
 TOTAL_DISTANCE = 21661
 YEAR = 2020
 
@@ -128,11 +129,11 @@ def auth():
     
     return creds
 
-def clear(sheet):
-    sheet.values().batchClear(
+def clear(spreadsheet, sheet):
+    spreadsheet.values().batchClear(
         spreadsheetId=SPREADSHEET_ID,
         body={
-            'ranges': [ WRITABLE_RANGE ]
+            'ranges': [ sheet + '!' + WRITABLE_RANGE ]
         }
     ).execute()
 
@@ -191,8 +192,8 @@ def workdates(year, month):
 
     return result
 
-def write(sheet, data):
-    sheet.values().update(spreadsheetId=SPREADSHEET_ID, range=WRITABLE_RANGE, body={ 'values': data }, valueInputOption='USER_ENTERED').execute()
+def write(spreadsheet, sheet, data):
+    spreadsheet.values().update(spreadsheetId=SPREADSHEET_ID, range=sheet + '!' + WRITABLE_RANGE, body={ 'values': data }, valueInputOption='USER_ENTERED').execute()
 
 def main():
     creds = auth()
@@ -200,9 +201,11 @@ def main():
     service = build('sheets', 'v4', credentials=creds)
 
     # Call the Sheets API
-    sheet = service.spreadsheets()
-    clear(sheet)
-    write(sheet, gen_data()[0])
+    spreadsheet_res = service.spreadsheets()
+    data = gen_data()
+    for idx, month in enumerate(spreadsheet_res.get(spreadsheetId=SPREADSHEET_ID).execute()['sheets']):
+        clear(spreadsheet_res, month['properties']['title'])
+        write(spreadsheet_res, month['properties']['title'], data[idx])
 
 if __name__ == '__main__':
     main()
