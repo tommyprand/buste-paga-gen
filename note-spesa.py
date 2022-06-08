@@ -15,11 +15,11 @@ from google.oauth2.credentials import Credentials
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 # The ID and range of a sample spreadsheet.
-SPREADSHEET_ID = '1_G86nEoEzipwL5Xiw8JVqEGXXNW964AZowD0o5-Ttiw'
+SPREADSHEET_ID = 'TODO'
 #The 'writable' range in the sheet
 WRITABLE_RANGE = 'A17:G55'
-TOTAL_DISTANCE = 21661
-YEAR = 2020
+TOTAL_DISTANCE = 36490
+YEAR = 2022
 
 DESTINATIONS = [
     {
@@ -105,8 +105,20 @@ DESTINATIONS = [
         'city': 'Perugia',
         'distance': 702,
         'weight': 1
-    }
-]
+    },
+    {
+        'name': 'Nuova Officina Piovese',
+        'city': 'Brugine',
+        'distance': 15,
+        'weight': 10
+    },
+    {
+        'name': 'Autofficina Marinoni',
+        'city': 'Legnaro',
+        'distance': 13,
+        'weight': 2
+    },
+   ]
 
 def auth():
     creds = None
